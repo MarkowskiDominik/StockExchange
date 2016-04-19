@@ -2,8 +2,10 @@ package markowski.stockexchange.entity;
 
 import java.math.BigDecimal;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,11 +22,11 @@ public class BankAccountFundsEntity {
 	@Column(name = "idBankAccountFunds")
 	private Long idBankAccountFunds;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "bankAccount", nullable = false)
 	private BankAccountEntity bankAccount;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "currencyCode", nullable = false)
 	private CurrencyEntity currencyCode;
 	

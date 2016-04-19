@@ -2,10 +2,12 @@ package markowski.stockexchange.entity;
 
 import java.math.BigDecimal;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,11 +27,11 @@ public class TransactionEntity {
 	@Column(name = "idTransaction")
 	private Long idTransaction;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "brokerAccount", nullable = false)
 	private BrokerAccountEntity brokerAccount;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "companyName", nullable = false)
 	private ListedCompaniesEntity companyName;
 

@@ -3,8 +3,10 @@ package markowski.stockexchange.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,7 +26,7 @@ public class StockQuotesEntity {
 	@Column(name = "date", nullable = false, columnDefinition = "DATE")
 	private Date date;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "companyName", nullable = false)
 	private ListedCompaniesEntity companyName;
 	
