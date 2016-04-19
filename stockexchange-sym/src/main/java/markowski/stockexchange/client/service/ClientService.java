@@ -8,4 +8,5 @@ public interface ClientService {
 	
 	List<ClientTo> findAllClient();
 
+	Long clientsCount();
 }

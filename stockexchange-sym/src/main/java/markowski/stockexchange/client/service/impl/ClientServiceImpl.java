@@ -23,4 +23,9 @@ public class ClientServiceImpl implements ClientService {
 		return ClientMapper.map2To(clientRepository.findAll());
 	}
 
+	@Override
+	public Long clientsCount() {
+		return clientRepository.count();
+	}
+
 }
