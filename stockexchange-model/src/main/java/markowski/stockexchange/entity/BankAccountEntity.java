@@ -1,8 +1,7 @@
 package markowski.stockexchange.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -11,12 +10,16 @@ import javax.persistence.Table;
 public class BankAccountEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "bankAccount")
 	private Long bankAccount;
 	
 	protected BankAccountEntity() {
 	}
 
+	public BankAccountEntity(Long bankAccount) {
+		this.bankAccount = bankAccount;
+	}
+	
 	public Long getBankAccount() {
 		return bankAccount;
 	}

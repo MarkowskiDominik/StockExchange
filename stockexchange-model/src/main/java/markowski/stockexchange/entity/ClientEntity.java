@@ -7,6 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -15,21 +16,24 @@ import javax.persistence.Table;
 public class ClientEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.TABLE)
+	@Column(name = "idClient")
 	private Long idClient;
-	
-	@Column(nullable = false, length = 45)
+
+	@Column(name = "name", nullable = false, length = 45)
 	private String name;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private BankAccountEntity bankAccount;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "bankAccount")
+	private BankAccountEntity bankAccount;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private BrokerAccountEntity brokerAccount;
-	
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "brokerAccount")
+	private BrokerAccountEntity brokerAccount;
+
 	protected ClientEntity() {
 	}
-	
+
 	public ClientEntity(String name) {
 		this.name = name;
 	}
