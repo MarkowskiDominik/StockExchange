@@ -1,6 +1,5 @@
 package markowski.stockexchange.entity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,13 +8,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import markowski.stockexchange.id.CurrencyExchangeRateId;
+
 @Entity
 @Table(name = "currency_exchange_rate")
-public class CurrencyExchangeRateEntity implements Serializable {
+@IdClass(CurrencyExchangeRateId.class)
+public class CurrencyExchangeRateEntity {
 
 	@Id
 	@Column(name = "date", columnDefinition = "DATE")
