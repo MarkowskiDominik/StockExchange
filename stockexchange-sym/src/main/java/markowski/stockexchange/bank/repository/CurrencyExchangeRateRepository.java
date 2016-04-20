@@ -1,6 +1,6 @@
 package markowski.stockexchange.bank.repository;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,8 +14,8 @@ import markowski.stockexchange.id.CurrencyExchangeRateId;
 public interface CurrencyExchangeRateRepository extends JpaRepository<CurrencyExchangeRateEntity, CurrencyExchangeRateId> {
 
 	@Query("select exchangeRate from CurrencyExchangeRateEntity exchangeRate where exchangeRate.date=:currentDate")
-	List<CurrencyExchangeRateEntity> findByDate(@Param("currentDate") LocalDate curerntDate);
+	List<CurrencyExchangeRateEntity> findByDate(@Param("currentDate") Date curerntDate);
 
 	@Query("select exchangeRate from CurrencyExchangeRateEntity exchangeRate where exchangeRate.date=:currentDate and exchangeRate.currencyCode=:currencyEntity")
-	CurrencyExchangeRateEntity findByDateAndCurrencyCode(@Param("currentDate") LocalDate currentDate, @Param("currencyEntity") CurrencyEntity currencyEntity);
+	CurrencyExchangeRateEntity findByDateAndCurrencyCode(@Param("currentDate") Date currentDate, @Param("currencyEntity") CurrencyEntity currencyEntity);
 }

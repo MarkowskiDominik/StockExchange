@@ -10,9 +10,10 @@ import markowski.stockexchange.bank.service.BankAdapter;
 import markowski.stockexchange.broker.service.BrokerAdapter;
 import markowski.stockexchange.client.Client;
 import markowski.stockexchange.client.service.ClientService;
-import markowski.stockexchange.date.DateSupervisor;
+import markowski.stockexchange.date.CurrentDate;
 import markowski.stockexchange.date.service.DateService;
 import markowski.stockexchange.to.ClientTo;
+import markowski.stockexchange.to.DateTo;
 
 @Component("symulation")
 public class Symulation {
@@ -30,16 +31,17 @@ public class Symulation {
 	
 	public void start() {
 
-		clients = new ArrayList<Client>();// clientService.clientsCount().intValue());
+		clients = new ArrayList<Client>();
 		for (ClientTo clientTo : clientService.findAllClient()) {
 			clients.add(new Client(clientTo, bankAdapter, brokerAdapter));
 		}
 
-		DateSupervisor dateSupervisor = new DateSupervisor(dateService);
-		
-		for (Client client : clients) {
-			client.playStockMarket();
+		CurrentDate currentDate = new CurrentDate();
+		for (DateTo dateTo : dateService.getAll()) {
+			currentDate.setDate(dateTo.getDate());
+			for (Client client : clients) {
+				client.playStockMarket();
+			}
 		}
-
 	}
 }

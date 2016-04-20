@@ -18,29 +18,28 @@ import markowski.stockexchange.to.BankAccountFundsTo;
 public class BankAccountFundsServiceImpl implements BankAccountFundsService {
 
 	@Autowired
+	private BankAccountFundsMapper bankAccountFundsMapper;
+	@Autowired
 	private BankAccountFundsRepository bankAccountFundsRepository;
-
 	@Autowired
 	private CurrencyRepository currencyRepository;
-
 	@Autowired
 	private BankAccountRepository bankAccountRepository;
 
 	@Override
 	public List<BankAccountFundsTo> findAllBankAccountFunds() {
-		return BankAccountFundsMapper.map2To(bankAccountFundsRepository.findAll());
+		return bankAccountFundsMapper.map2To(bankAccountFundsRepository.findAll());
 	}
 
 	@Override
 	public List<BankAccountFundsTo> getBankAccountFundsByAccount(Long account) {
-		return BankAccountFundsMapper.map2To(bankAccountFundsRepository.findByAccount(bankAccountRepository.getOne(account)));
+		return bankAccountFundsMapper.map2To(bankAccountFundsRepository.findByAccount(bankAccountRepository.getOne(account)));
 	}
 
 	@Override
 	public BankAccountFundsTo getBankAccountFundsByAccountAndCurrency(Long account, String currencyCode) {
-		return BankAccountFundsMapper.map(bankAccountFundsRepository.findByAccountAndCurrency(
+		return bankAccountFundsMapper.map(bankAccountFundsRepository.findByAccountAndCurrency(
 				bankAccountRepository.getOne(account),
 				currencyRepository.getOne(currencyCode)));
 	}
-
 }

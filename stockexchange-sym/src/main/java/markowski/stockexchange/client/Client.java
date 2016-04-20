@@ -4,7 +4,6 @@ import java.util.List;
 
 import markowski.stockexchange.bank.service.BankAdapter;
 import markowski.stockexchange.broker.service.BrokerAdapter;
-import markowski.stockexchange.enums.TransactionType;
 import markowski.stockexchange.strategy.Strategy;
 import markowski.stockexchange.strategy.factory.StrategyFactory;
 import markowski.stockexchange.to.ClientTo;
@@ -65,17 +64,13 @@ public class Client {
 	}
 
 	public void playStockMarket() {
-		bankAdapter.getActualyExchangeRate();
-		brokerAdapter.getActualyStockQuotes();
-		
-		suggestedTransaction = strategy.suggestTheBestTransaction();
+		suggestedTransaction = strategy.suggestSaleTransaction();
 		for (TransactionTo transactionTo : suggestedTransaction) {
-			if (TransactionType.BUY.equals(transactionTo.getType())) {
-				buyStocks(transactionTo);
-			}
-			if (TransactionType.SELL.equals(transactionTo.getType())) {
-				sellStocks(transactionTo);
-			}
+			sellStocks(transactionTo);
+		}
+		suggestedTransaction = strategy.suggestBuyTransaction();
+		for (TransactionTo transactionTo : suggestedTransaction) {
+			buyStocks(transactionTo);
 		}
 	}
 

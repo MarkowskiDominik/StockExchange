@@ -10,7 +10,7 @@ import markowski.stockexchange.bank.mapper.CurrencyExchangeRateMapper;
 import markowski.stockexchange.bank.repository.CurrencyExchangeRateRepository;
 import markowski.stockexchange.bank.repository.CurrencyRepository;
 import markowski.stockexchange.bank.service.CurrencyExchangeRateService;
-import markowski.stockexchange.date.DateSupervisor;
+import markowski.stockexchange.date.CurrentDate;
 import markowski.stockexchange.to.CurrencyExchangeRateTo;
 
 @Service("CurrencyExchangeRateService")
@@ -18,26 +18,27 @@ import markowski.stockexchange.to.CurrencyExchangeRateTo;
 public class CurrencyExchangeRateServiceImpl implements CurrencyExchangeRateService {
 
 	@Autowired
+	private CurrencyExchangeRateMapper currencyExchangeRateMapper;
+	@Autowired
 	private CurrencyExchangeRateRepository currencyExchangeRateRepository;
-	
 	@Autowired
 	private CurrencyRepository currencyRepository;
 
 	@Override
 	public List<CurrencyExchangeRateTo> findAllCurrencyExchangeRate() {
-		return CurrencyExchangeRateMapper.map2To(currencyExchangeRateRepository.findAll());
+		return currencyExchangeRateMapper.map2To(currencyExchangeRateRepository.findAll());
 	}
 
 	@Override
 	public List<CurrencyExchangeRateTo> getActualyCurrencyExchangeRate() {
-		return CurrencyExchangeRateMapper
-				.map2To(currencyExchangeRateRepository.findByDate(DateSupervisor.getCurrentDateSQL()));
+		return currencyExchangeRateMapper
+				.map2To(currencyExchangeRateRepository.findByDate(CurrentDate.getCurrentDateSQL()));
 	}
 
 	@Override
 	public CurrencyExchangeRateTo getActualyCurrencyExchangeRate(String currencyCode) {
-		return CurrencyExchangeRateMapper.map(currencyExchangeRateRepository
-				.findByDateAndCurrencyCode(DateSupervisor.getCurrentDateSQL(), currencyRepository.getOne(currencyCode)));
+		return currencyExchangeRateMapper.map(currencyExchangeRateRepository
+				.findByDateAndCurrencyCode(CurrentDate.getCurrentDateSQL(), currencyRepository.getOne(currencyCode)));
 	}
 
 }

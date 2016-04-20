@@ -53,12 +53,13 @@ public class TransactionEntity {
 	}
 
 	public TransactionEntity(BrokerAccountEntity brokerAccount, ListedCompaniesEntity companyName,
-			Integer numberOfStocks, BigDecimal totalPrice, TransactionType type) {
+			Integer numberOfStocks, BigDecimal totalPrice, TransactionType type, TransactionStatus status) {
 		this.brokerAccount = brokerAccount;
 		this.companyName = companyName;
 		this.numberOfStocks = numberOfStocks;
 		this.totalPrice = totalPrice;
 		this.type = type;
+		this.status = status;
 	}
 
 	public Long getIdTransaction() {

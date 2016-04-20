@@ -6,5 +6,7 @@ import markowski.stockexchange.to.TransactionTo;
 
 public interface Strategy {
 	
-	List<TransactionTo> suggestTheBestTransaction();
+	List<TransactionTo> suggestSaleTransaction();
+
+	List<TransactionTo> suggestBuyTransaction();
 }
