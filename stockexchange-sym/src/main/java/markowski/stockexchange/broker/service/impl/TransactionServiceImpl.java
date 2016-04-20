@@ -23,4 +23,9 @@ public class TransactionServiceImpl implements TransactionService {
 		return transactionMapper.map(transactionRepository.save(transactionMapper.map(preprocessOffer)));
 	}
 
+	@Override
+	public TransactionTo getTransaction(Long idTransaction) {
+		return transactionMapper.map(transactionRepository.getOne(idTransaction));
+	}
+
 }

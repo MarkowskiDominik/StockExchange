@@ -15,9 +15,9 @@ import markowski.stockexchange.to.BankAccountFundsTo;
 @Service("BankAccountFundsMapper")
 public class BankAccountFundsMapperImpl implements BankAccountFundsMapper {
 	@Autowired
-	private static CurrencyRepository currencyRepository;
+	private CurrencyRepository currencyRepository;
 	@Autowired
-	private static BankAccountRepository bankAccountRepository;
+	private BankAccountRepository bankAccountRepository;
 
 	public BankAccountFundsTo map(BankAccountFundsEntity bankAccountFundsEntity) {
 		if (bankAccountFundsEntity != null) {

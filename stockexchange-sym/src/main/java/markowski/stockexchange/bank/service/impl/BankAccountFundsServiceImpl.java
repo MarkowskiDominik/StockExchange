@@ -1,5 +1,6 @@
 package markowski.stockexchange.bank.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,19 @@ public class BankAccountFundsServiceImpl implements BankAccountFundsService {
 		return bankAccountFundsMapper.map(bankAccountFundsRepository.findByAccountAndCurrency(
 				bankAccountRepository.getOne(account),
 				currencyRepository.getOne(currencyCode)));
+	}
+
+	@Override
+	public void removeFundsFromAccount(Long senderBankAccount, BigDecimal amount, String currencyCode) {
+		BankAccountFundsTo bankAccountFundsTo = this.getBankAccountFundsByAccountAndCurrency(senderBankAccount, currencyCode);
+		bankAccountFundsTo.setFunds(bankAccountFundsTo.getFunds().subtract(amount));
+		bankAccountFundsRepository.save(bankAccountFundsMapper.map(bankAccountFundsTo));
+	}
+
+	@Override
+	public void addFundsToAccount(Long recipientBankAccount, BigDecimal amount, String currencyCode) {
+		BankAccountFundsTo bankAccountFundsTo = this.getBankAccountFundsByAccountAndCurrency(recipientBankAccount, currencyCode);
+		bankAccountFundsTo.setFunds(bankAccountFundsTo.getFunds().add(amount));
+		bankAccountFundsRepository.save(bankAccountFundsMapper.map(bankAccountFundsTo));
 	}
 }

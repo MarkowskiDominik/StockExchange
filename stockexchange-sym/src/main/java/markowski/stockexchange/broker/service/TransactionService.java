@@ -6,4 +6,6 @@ public interface TransactionService {
 
 	TransactionTo saveOffer(TransactionTo preprocessOffer);
 
+	TransactionTo getTransaction(Long idTransaction);
+
 }

@@ -7,10 +7,12 @@ import markowski.stockexchange.broker.service.BrokerAdapter;
 import markowski.stockexchange.strategy.Strategy;
 import markowski.stockexchange.strategy.factory.StrategyFactory;
 import markowski.stockexchange.to.ClientTo;
+import markowski.stockexchange.to.PaymentConfirmationTo;
 import markowski.stockexchange.to.TransactionTo;
 
 public class Client {
-	
+
+	private static final String CURRENCY_CODE = "PLN";
 	private Long id;
 	private Long bankAccount;
 	private Long brokerAccount;
@@ -21,12 +23,12 @@ public class Client {
 
 	public Client() {
 	}
-	
+
 	public Client(ClientTo clientTo, BankAdapter bankAdapter, BrokerAdapter brokerAdapter) {
 		id = clientTo.getIdClient();
 		bankAccount = clientTo.getBankAccount();
 		brokerAccount = clientTo.getBrokerAccount();
-		this.bankAdapter= bankAdapter;
+		this.bankAdapter = bankAdapter;
 		this.brokerAdapter = brokerAdapter;
 		strategy = StrategyFactory.getStrategy(id, bankAccount, brokerAccount, bankAdapter, brokerAdapter);
 	}
@@ -75,13 +77,14 @@ public class Client {
 	}
 
 	private void buyStocks(TransactionTo transactionTo) {
-		// TODO Auto-generated method stub
-		
+		PaymentConfirmationTo paymentConfirmationTo = bankAdapter.makeBankTransfer(bankAccount, brokerAdapter.getBankAccount(), transactionTo.getIdTransaction(),
+				transactionTo.getTotalPrice(), CURRENCY_CODE);
+		brokerAdapter.buyStocks(transactionTo, paymentConfirmationTo);
 	}
 
 	private void sellStocks(TransactionTo transactionTo) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

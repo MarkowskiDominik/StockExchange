@@ -1,5 +1,6 @@
 package markowski.stockexchange.bank.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import markowski.stockexchange.bank.service.BankAdapter;
 import markowski.stockexchange.bank.service.CurrencyExchangeRateService;
 import markowski.stockexchange.to.BankAccountFundsTo;
 import markowski.stockexchange.to.CurrencyExchangeRateTo;
+import markowski.stockexchange.to.PaymentConfirmationTo;
 
 @Service("BankAdapter")
 @Transactional
@@ -30,6 +32,14 @@ public class BankAdapterImpl implements BankAdapter {
 	@Override
 	public List<CurrencyExchangeRateTo> getActualyExchangeRate() {
 		return currencyExchangeRateService.getActualyCurrencyExchangeRate();
+	}
+
+	@Override
+	public PaymentConfirmationTo makeBankTransfer(Long senderBankAccount, Long recipientBankAccount, Long idTransaction,
+			BigDecimal totalPrice, String currencyCode) {
+		bankAccountFundsService.removeFundsFromAccount(senderBankAccount, totalPrice, currencyCode);
+		bankAccountFundsService.addFundsToAccount(recipientBankAccount, totalPrice, currencyCode);
+		return new PaymentConfirmationTo(senderBankAccount, recipientBankAccount, idTransaction, totalPrice);
 	}
 
 }

@@ -3,12 +3,12 @@ package markowski.stockexchange.date;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class CurrentDate {
+public class DateProvider {
 
 	private static LocalDate currentDate;
 
 	
-	public CurrentDate() {
+	public DateProvider() {
 	}
 
 	public static LocalDate getCurrentDate() {

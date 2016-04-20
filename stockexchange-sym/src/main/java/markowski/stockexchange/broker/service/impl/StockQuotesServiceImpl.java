@@ -11,7 +11,7 @@ import markowski.stockexchange.broker.mapper.StockQuotesMapper;
 import markowski.stockexchange.broker.repository.ListedCompaniesRepository;
 import markowski.stockexchange.broker.repository.StockQuotesRepository;
 import markowski.stockexchange.broker.service.StockQuotesService;
-import markowski.stockexchange.date.CurrentDate;
+import markowski.stockexchange.date.DateProvider;
 import markowski.stockexchange.to.StockQuotesTo;
 
 @Service("StockQuotesService")
@@ -33,7 +33,7 @@ public class StockQuotesServiceImpl implements StockQuotesService {
 
 	@Override
 	public StockQuotesTo getActualyStockQuotesByCompanyName(String companyName) {
-		return stockQuotesMapper.map(stockQuotesRepository.getActualyByCompany(CurrentDate.getCurrentDateSQL(),
+		return stockQuotesMapper.map(stockQuotesRepository.getActualyByCompany(DateProvider.getCurrentDateSQL(),
 				listedCompaniesRepository.getOne(companyName)));
 	}
 
