@@ -1,6 +1,10 @@
 package markowski.stockexchange.strategy;
 
+import java.util.List;
+
+import markowski.stockexchange.to.TransactionTo;
+
 public interface Strategy {
 	
-	void suggestTheBestTransaction();
+	List<TransactionTo> suggestTheBestTransaction();
 }

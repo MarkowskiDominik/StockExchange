@@ -1,25 +1,35 @@
 package markowski.stockexchange.client;
 
+import java.util.List;
+
+import markowski.stockexchange.bank.service.BankAdapter;
+import markowski.stockexchange.broker.service.BrokerAdapter;
+import markowski.stockexchange.enums.TransactionType;
 import markowski.stockexchange.strategy.Strategy;
 import markowski.stockexchange.strategy.factory.StrategyFactory;
 import markowski.stockexchange.to.ClientTo;
+import markowski.stockexchange.to.TransactionTo;
 
 public class Client {
-
+	
 	private Long id;
 	private Long bankAccount;
 	private Long brokerAccount;
+	private BankAdapter bankAdapter;
+	private BrokerAdapter brokerAdapter;
 	private Strategy strategy;
+	private List<TransactionTo> suggestedTransaction;
 
 	public Client() {
-		strategy = StrategyFactory.getStrategy(id);
 	}
 	
-	public Client(ClientTo clientTo) {
+	public Client(ClientTo clientTo, BankAdapter bankAdapter, BrokerAdapter brokerAdapter) {
 		id = clientTo.getIdClient();
 		bankAccount = clientTo.getBankAccount();
 		brokerAccount = clientTo.getBrokerAccount();
-		strategy = StrategyFactory.getStrategy(id);
+		this.bankAdapter= bankAdapter;
+		this.brokerAdapter = brokerAdapter;
+		strategy = StrategyFactory.getStrategy(id, bankAccount, brokerAccount, bankAdapter, brokerAdapter);
 	}
 
 	public Long getId() {
@@ -55,6 +65,28 @@ public class Client {
 	}
 
 	public void playStockMarket() {
-		strategy.suggestTheBestTransaction();
+		bankAdapter.getActualyExchangeRate();
+		brokerAdapter.getActualyStockQuotes();
+		
+		suggestedTransaction = strategy.suggestTheBestTransaction();
+		for (TransactionTo transactionTo : suggestedTransaction) {
+			if (TransactionType.BUY.equals(transactionTo.getType())) {
+				buyStocks(transactionTo);
+			}
+			if (TransactionType.SELL.equals(transactionTo.getType())) {
+				sellStocks(transactionTo);
+			}
+		}
 	}
+
+	private void buyStocks(TransactionTo transactionTo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void sellStocks(TransactionTo transactionTo) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
