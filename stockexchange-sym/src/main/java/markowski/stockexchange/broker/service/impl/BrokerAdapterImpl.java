@@ -1,6 +1,7 @@
 package markowski.stockexchange.broker.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import markowski.stockexchange.bank.service.BankAdapter;
 import markowski.stockexchange.broker.service.BrokerAdapter;
 import markowski.stockexchange.broker.service.StockQuotesService;
 import markowski.stockexchange.broker.service.StocksPurchasedByClientService;
 import markowski.stockexchange.broker.service.TransactionService;
 import markowski.stockexchange.date.DateProvider;
+import markowski.stockexchange.enums.TransactionStatus;
 import markowski.stockexchange.enums.TransactionType;
 import markowski.stockexchange.to.PaymentConfirmationTo;
 import markowski.stockexchange.to.StockQuotesTo;
@@ -24,19 +27,18 @@ import markowski.stockexchange.to.TransactionTo;
 @Transactional
 public class BrokerAdapterImpl implements BrokerAdapter {
 
-	// private static final BigDecimal BIG_DECIMAL = new BigDecimal(new
-	// Random().nextLong() * 0.02 + 0.98);
 	private static final BigDecimal PROVISION = new BigDecimal(0.5);
 	private static final int MINIMAL_PROVISION = 5;
+	private static final String CURRENCY_CODE = "PLN";
 
 	@Autowired
 	private StockQuotesService stockQuotesService;
-
 	@Autowired
 	private StocksPurchasedByClientService stocksPurchasedByClientService;
-
 	@Autowired
 	private TransactionService transactionService;
+	@Autowired
+	private BankAdapter bankAdapter;
 
 	@Override
 	public List<StocksPurchasedByClientTo> getClientStocks(Long brokerAccount) {
@@ -53,7 +55,7 @@ public class BrokerAdapterImpl implements BrokerAdapter {
 	public List<TransactionTo> preprocessClientOffer(List<TransactionTo> generatedClientOffer) {
 		List<TransactionTo> transactions = new ArrayList<TransactionTo>();
 		for (TransactionTo clientOffer : generatedClientOffer) {
-			transactions.add(transactionService.saveOffer(preprocessOffer(clientOffer)));
+			transactions.add(transactionService.save(preprocessOffer(clientOffer)));
 		}
 		return transactions;
 	}
@@ -80,7 +82,6 @@ public class BrokerAdapterImpl implements BrokerAdapter {
 		} else {
 			ratioOfOrginalPrice = new BigDecimal(new Random().nextDouble() * 0.02 + 1.0);
 		}
-		System.out.println("abcd\nabcd\n" + ratioOfOrginalPrice);
 		BigDecimal unitPriceForThisClient = actualyStockQuotesByCompanyName.getUnitPrice()
 				.multiply(ratioOfOrginalPrice);
 		BigDecimal priceWithoutProvision = new BigDecimal(numberOfStocks).multiply(unitPriceForThisClient);
@@ -101,19 +102,21 @@ public class BrokerAdapterImpl implements BrokerAdapter {
 	@Override
 	public void buyStocks(TransactionTo clientTransaction, PaymentConfirmationTo paymentConfirmationTo) {
 		TransactionTo transactionInBase = transactionService.getTransaction(clientTransaction.getIdTransaction());
-		if (transactionInBase.getTotalPrice().equals(clientTransaction.getTotalPrice())) {
-			StocksPurchasedByClientTo stockPurchasedByClientTo = stocksPurchasedByClientService
-					.getStockPurchsedByClientAndCompany(clientTransaction.getBrokerAccount(),
-							clientTransaction.getCompanyName());
-			if (stockPurchasedByClientTo != null) {
-				addNumberOfStockPurchased(stockPurchasedByClientTo, transactionInBase);
-			} else {
-				stockPurchasedByClientTo = new StocksPurchasedByClientTo(null, clientTransaction.getBrokerAccount(),
-						clientTransaction.getCompanyName(), clientTransaction.getNumberOfStocks(), clientTransaction
-								.getTotalPrice().divide(new BigDecimal(clientTransaction.getNumberOfStocks())));
-			}
-			stocksPurchasedByClientService.save(stockPurchasedByClientTo);
+
+		StocksPurchasedByClientTo stockPurchasedByClientTo = stocksPurchasedByClientService
+				.getStockPurchsedByClientAndCompany(clientTransaction.getBrokerAccount(),
+						clientTransaction.getCompanyName());
+		if (stockPurchasedByClientTo != null) {
+			addNumberOfStockPurchased(stockPurchasedByClientTo, transactionInBase);
+		} else {
+			stockPurchasedByClientTo = new StocksPurchasedByClientTo(null, clientTransaction.getBrokerAccount(),
+					clientTransaction.getCompanyName(), clientTransaction.getNumberOfStocks(),
+					clientTransaction.getTotalPrice().divide(new BigDecimal(clientTransaction.getNumberOfStocks())));
 		}
+
+		stocksPurchasedByClientService.save(stockPurchasedByClientTo);
+		transactionInBase.setStatus(TransactionStatus.ACCEPT);
+		transactionService.save(transactionInBase);
 	}
 
 	private void addNumberOfStockPurchased(StocksPurchasedByClientTo stockPurchasedByClientTo,
@@ -128,14 +131,42 @@ public class BrokerAdapterImpl implements BrokerAdapter {
 		Integer totalNumberOfStock = numberOfStockTransaction + numberOfStockPurchased;
 
 		stockPurchasedByClientTo.setNumberOfStocks(numberOfStockPurchased + numberOfStockTransaction);
-		stockPurchasedByClientTo.setAveragePurchasePrice(
-				(totalPriceStockPurchased.add(totalPriceTransaction).divide(new BigDecimal(totalNumberOfStock))));
+		stockPurchasedByClientTo.setAveragePurchasePrice((totalPriceStockPurchased.add(totalPriceTransaction)
+				.divide(new BigDecimal(totalNumberOfStock), 2, RoundingMode.HALF_UP)));
 
 	}
 
 	@Override
-	public PaymentConfirmationTo sellStocks(TransactionTo transactionTo) {
-		// TODO Auto-generated method stub
-		return null;
+	public PaymentConfirmationTo sellStocks(TransactionTo clientTransaction, Long bankAccount) {
+		PaymentConfirmationTo paymentConfirmationTo = bankAdapter.makeBankTransfer(getBankAccount(), bankAccount,
+				clientTransaction.getIdTransaction(), clientTransaction.getTotalPrice(), CURRENCY_CODE);
+
+		TransactionTo transactionInBase = transactionService.getTransaction(clientTransaction.getIdTransaction());
+
+		StocksPurchasedByClientTo stockPurchasedByClientTo = stocksPurchasedByClientService
+				.getStockPurchsedByClientAndCompany(clientTransaction.getBrokerAccount(),
+						clientTransaction.getCompanyName());
+		if (stockPurchasedByClientTo != null) {
+			subtractNumberOfStockPurchased(stockPurchasedByClientTo, transactionInBase);
+		} else {
+			stockPurchasedByClientTo = new StocksPurchasedByClientTo(null, clientTransaction.getBrokerAccount(),
+					clientTransaction.getCompanyName(), clientTransaction.getNumberOfStocks(),
+					clientTransaction.getTotalPrice().divide(new BigDecimal(clientTransaction.getNumberOfStocks())));
+		}
+		
+		stocksPurchasedByClientService.save(stockPurchasedByClientTo);
+		transactionInBase.setStatus(TransactionStatus.ACCEPT);
+		transactionService.save(transactionInBase);
+
+		return paymentConfirmationTo;
 	}
+
+	private void subtractNumberOfStockPurchased(StocksPurchasedByClientTo stockPurchasedByClientTo,
+			TransactionTo transactionInBase) {
+		Integer numberOfStockTransaction = transactionInBase.getNumberOfStocks();
+		Integer numberOfStockPurchased = stockPurchasedByClientTo.getNumberOfStocks();
+
+		stockPurchasedByClientTo.setNumberOfStocks(numberOfStockPurchased - numberOfStockTransaction);
+	}
+
 }

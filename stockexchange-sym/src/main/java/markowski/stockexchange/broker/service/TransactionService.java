@@ -4,7 +4,7 @@ import markowski.stockexchange.to.TransactionTo;
 
 public interface TransactionService {
 
-	TransactionTo saveOffer(TransactionTo preprocessOffer);
+	TransactionTo save(TransactionTo preprocessOffer);
 
 	TransactionTo getTransaction(Long idTransaction);
 

@@ -19,7 +19,7 @@ public class TransactionServiceImpl implements TransactionService {
 	private TransactionRepository transactionRepository;
 
 	@Override
-	public TransactionTo saveOffer(TransactionTo preprocessOffer) {
+	public TransactionTo save(TransactionTo preprocessOffer) {
 		return transactionMapper.map(transactionRepository.save(transactionMapper.map(preprocessOffer)));
 	}
 

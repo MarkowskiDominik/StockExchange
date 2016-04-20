@@ -45,6 +45,18 @@ LINES TERMINATED BY '\n'
 (`companyName`, `date`, `unitPrice`);
 
 -- -----------------------------------------------------
+-- Table `stock_exchange`.`date`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `stock_exchange`.`date` (
+  `idDate` BIGINT(19) NOT NULL AUTO_INCREMENT,
+  `date` DATE NOT NULL,
+  PRIMARY KEY (`idDate`));
+
+INSERT INTO `stock_exchange`.`date` (`date`)
+SELECT distinct sq.date
+FROM `stock_exchange`.`stock_quotes` as sq;
+
+-- -----------------------------------------------------
 -- Table `stock_exchange`.`bank_account`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `stock_exchange`.`bank_account` (
@@ -181,6 +193,16 @@ CREATE TABLE IF NOT EXISTS `stock_exchange`.`bank_account_funds` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
+INSERT INTO `stock_exchange`.`bank_account_funds` (`bankAccount`, `currencyCode`, `funds`)
+VALUES
+	(1000, 'PLN', 50000.00),
+	(1001, 'PLN', 5000.00),
+	(1001, 'EUR', 1250.00),
+	(1002, 'PLN', 5000.00),
+	(1002, 'EUR', 1250.00),
+	(1003, 'PLN', 5000.00),
+	(1003, 'EUR', 1250.00);
+
 -- -----------------------------------------------------
 -- Table `stock_exchange`.`transaction`
 -- -----------------------------------------------------
@@ -190,8 +212,8 @@ CREATE TABLE IF NOT EXISTS `stock_exchange`.`transaction` (
   `companyName` VARCHAR(45) NOT NULL,
   `numberOfStocks` INT NOT NULL,
   `totalPrice` DECIMAL(10,2) NOT NULL,
-  `type` ENUM('buy', 'sell') NOT NULL,
-  `status` ENUM('offer', 'done') NOT NULL,
+  `type` ENUM('BUY', 'SELL') NOT NULL,
+  `status` ENUM('OFFER', 'ACCEPT') NOT NULL,
   PRIMARY KEY (`idTransaction`),
   INDEX `fk_transaction_broker_account1_idx` (`brokerAccount` ASC),
   INDEX `fk_transaction_stock_company1_idx` (`companyName` ASC),

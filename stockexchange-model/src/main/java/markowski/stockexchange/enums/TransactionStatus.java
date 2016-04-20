@@ -1,5 +1,5 @@
 package markowski.stockexchange.enums;
 
 public enum TransactionStatus {
-	OFFER, ACCEPT
+	ACCEPT, OFFER
 }

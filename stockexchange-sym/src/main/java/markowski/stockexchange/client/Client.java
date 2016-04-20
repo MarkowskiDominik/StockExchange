@@ -83,8 +83,7 @@ public class Client {
 	}
 
 	private void sellStocks(TransactionTo transactionTo) {
-		// TODO Auto-generated method stub
-
+		brokerAdapter.sellStocks(transactionTo, bankAccount);
 	}
 
 }

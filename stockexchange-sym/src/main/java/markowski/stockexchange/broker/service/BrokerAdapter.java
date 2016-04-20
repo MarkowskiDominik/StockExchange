@@ -19,5 +19,5 @@ public interface BrokerAdapter {
 
 	void buyStocks(TransactionTo transactionTo, PaymentConfirmationTo paymentConfirmationTo);
 
-	PaymentConfirmationTo sellStocks(TransactionTo transactionTo);
+	PaymentConfirmationTo sellStocks(TransactionTo transactionTo, Long bankAccount);
 }

@@ -35,7 +35,7 @@ public class TransactionEntity {
 	@JoinColumn(name = "companyName", nullable = false)
 	private ListedCompaniesEntity companyName;
 
-	@Column(name = "numberOfStocks")
+	@Column(name = "numberOfStocks", nullable = false)
 	private Integer numberOfStocks;
 
 	@Column(name = "totalPrice", nullable = false, precision = 10, scale = 2)
@@ -46,7 +46,7 @@ public class TransactionEntity {
 	private TransactionType type;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
+	@Column(name = "status", nullable = false)
 	private TransactionStatus status;
 
 	protected TransactionEntity() {
